@@ -10,8 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/auth")
-@CrossOrigin(origins = "*")
+@RequestMapping("/api/auth")
 public class AuthController {
 
     @Autowired
