@@ -1,30 +1,14 @@
 package com.example.Backend.config;
 
-import com.example.Backend.model.*;
-import com.example.Backend.repository.*;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 @Component
 public class DataLoader implements CommandLineRunner {
-    
-    private final UserRepository userRepository;
-    private final BusinessRepository businessRepository;
-    private final CampaignRepository campaignRepository;
-    private final PostRepository postRepository;
-
-    public DataLoader(UserRepository userRepository, BusinessRepository businessRepository,
-                      CampaignRepository campaignRepository, PostRepository postRepository) {
-        this.userRepository = userRepository;
-        this.businessRepository = businessRepository;
-        this.campaignRepository = campaignRepository;
-        this.postRepository = postRepository;
-    }
 
     @Override
     public void run(String... args) {
+<<<<<<< HEAD
         // Users
         User user1 = new User();
         user1.setBusinessName("TechStart Solutions");
@@ -165,5 +149,8 @@ public class DataLoader implements CommandLineRunner {
 
         System.out.println("✅ Test data loaded successfully!");
         System.out.println("📊 Created: 2 Users, 3 Businesses, 3 Campaigns, 5 Posts");
+=======
+        // Data loader disabled - no hardcoded data
+>>>>>>> 85d473babab846e1dfb46e89271484d3ed008f11
     }
 }
