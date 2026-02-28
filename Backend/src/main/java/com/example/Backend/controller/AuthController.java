@@ -11,6 +11,10 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/auth")
+<<<<<<< HEAD
+=======
+@CrossOrigin(origins = "*")
+>>>>>>> 9e243e6b7d4225a3849ed0b432b7a3845f9cb1c9
 public class AuthController {
 
     @Autowired
@@ -23,11 +27,12 @@ public class AuthController {
         }
 
         User savedUser = userRepository.save(user);
-        
+
         Map<String, Object> response = new HashMap<>();
         response.put("userId", savedUser.getId());
+        response.put("businessId", savedUser.getId()); // Use userId as businessId for now
         response.put("message", "Registration successful");
-        
+
         return ResponseEntity.ok(response);
     }
 
@@ -37,7 +42,7 @@ public class AuthController {
         String password = credentials.get("password");
 
         User user = userRepository.findByContact(contact)
-            .orElse(null);
+                .orElse(null);
 
         if (user == null || !user.getPassword().equals(password)) {
             return ResponseEntity.badRequest().body(Map.of("message", "Invalid credentials"));
@@ -45,8 +50,9 @@ public class AuthController {
 
         Map<String, Object> response = new HashMap<>();
         response.put("userId", user.getId());
+        response.put("businessId", user.getId()); // Use userId as businessId for now
         response.put("message", "Login successful");
-        
+
         return ResponseEntity.ok(response);
     }
 }
