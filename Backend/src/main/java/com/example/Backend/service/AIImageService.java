@@ -1,36 +1,16 @@
 package com.example.Backend.service;
 
 import org.springframework.stereotype.Service;
-import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.Base64;
 
 @Service
 public class AIImageService {
     
-    private final WebClient webClient;
-    
     public AIImageService() {
-        this.webClient = WebClient.builder().build();
     }
     
     public String generateImage(String prompt) {
-        try {
-            // Use Pollinations.ai - free, no auth, works reliably
-            String encodedPrompt = java.net.URLEncoder.encode(prompt, "UTF-8");
-            byte[] imageBytes = webClient.get()
-                .uri("https://image.pollinations.ai/prompt/" + encodedPrompt + "?width=1024&height=1024&nologo=true")
-                .retrieve()
-                .bodyToMono(byte[].class)
-                .block();
-            
-            if (imageBytes != null && imageBytes.length > 100) {
-                return "data:image/jpeg;base64," + Base64.getEncoder().encodeToString(imageBytes);
-            }
-        } catch (Exception e) {
-            System.err.println("Image API failed: " + e.getMessage());
-        }
-        
         return generateSVGFallback(prompt);
     }
     
