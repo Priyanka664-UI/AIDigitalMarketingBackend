@@ -49,8 +49,8 @@ public class DataLoader implements CommandLineRunner {
         business1.setBusinessName("TechStart Solutions");
         business1.setProductDetails("Cloud-based SaaS solutions for small businesses");
         business1.setTargetAudience("SMB owners, IT managers");
-        business1.setBrandTone(Business.BrandTone.PROFESSIONAL);
-        business1.setMarketingGoal(Business.MarketingGoal.LEADS);
+        business1.setBrandTone(BrandTone.PROFESSIONAL);
+        business1.setMarketingGoal(MarketingGoal.LEADS);
         business1.setIndustry("Technology");
         businessRepository.save(business1);
 
@@ -58,8 +58,8 @@ public class DataLoader implements CommandLineRunner {
         business2.setBusinessName("Fashion Hub");
         business2.setProductDetails("Trendy clothing and accessories");
         business2.setTargetAudience("Fashion-conscious millennials");
-        business2.setBrandTone(Business.BrandTone.CASUAL);
-        business2.setMarketingGoal(Business.MarketingGoal.SALES);
+        business2.setBrandTone(BrandTone.CASUAL);
+        business2.setMarketingGoal(MarketingGoal.SALES);
         business2.setIndustry("Fashion");
         businessRepository.save(business2);
 
@@ -67,8 +67,8 @@ public class DataLoader implements CommandLineRunner {
         business3.setBusinessName("Gourmet Delights");
         business3.setProductDetails("Premium organic food products");
         business3.setTargetAudience("Health-conscious consumers");
-        business3.setBrandTone(Business.BrandTone.PREMIUM);
-        business3.setMarketingGoal(Business.MarketingGoal.AWARENESS);
+        business3.setBrandTone(BrandTone.PREMIUM);
+        business3.setMarketingGoal(MarketingGoal.AWARENESS);
         business3.setIndustry("Food & Beverage");
         businessRepository.save(business3);
 
@@ -78,7 +78,7 @@ public class DataLoader implements CommandLineRunner {
         campaign1.setName("Q1 Product Launch");
         campaign1.setStartDate(LocalDate.now());
         campaign1.setEndDate(LocalDate.now().plusMonths(3));
-        campaign1.setStatus(Campaign.CampaignStatus.ACTIVE);
+        campaign1.setStatus(CampaignStatus.ACTIVE);
         campaignRepository.save(campaign1);
 
         Campaign campaign2 = new Campaign();
@@ -86,7 +86,7 @@ public class DataLoader implements CommandLineRunner {
         campaign2.setName("Summer Collection 2024");
         campaign2.setStartDate(LocalDate.now().minusDays(15));
         campaign2.setEndDate(LocalDate.now().plusMonths(2));
-        campaign2.setStatus(Campaign.CampaignStatus.ACTIVE);
+        campaign2.setStatus(CampaignStatus.ACTIVE);
         campaignRepository.save(campaign2);
 
         Campaign campaign3 = new Campaign();
@@ -94,7 +94,7 @@ public class DataLoader implements CommandLineRunner {
         campaign3.setName("Organic Awareness Drive");
         campaign3.setStartDate(LocalDate.now().plusDays(7));
         campaign3.setEndDate(LocalDate.now().plusMonths(1));
-        campaign3.setStatus(Campaign.CampaignStatus.DRAFT);
+        campaign3.setStatus(CampaignStatus.DRAFT);
         campaignRepository.save(campaign3);
 
         // Posts
