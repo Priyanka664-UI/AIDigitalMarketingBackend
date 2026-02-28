@@ -12,20 +12,19 @@ public class User {
     @Column(nullable = false)
     private String businessName;
 
-    @Column(nullable = false)
     private String category;
 
-    @Column(nullable = false)
     private String targetAudience;
 
-    @Column(nullable = false)
     private String brandTone;
 
     @Column(nullable = false, unique = true)
-    private String contact;
+    private String email;
 
     @Column(nullable = false)
     private String password;
+
+    private Long businessId;
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
@@ -42,9 +41,12 @@ public class User {
     public String getBrandTone() { return brandTone; }
     public void setBrandTone(String brandTone) { this.brandTone = brandTone; }
 
-    public String getContact() { return contact; }
-    public void setContact(String contact) { this.contact = contact; }
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
 
     public String getPassword() { return password; }
     public void setPassword(String password) { this.password = password; }
+
+    public Long getBusinessId() { return businessId; }
+    public void setBusinessId(Long businessId) { this.businessId = businessId; }
 }

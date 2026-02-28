@@ -51,4 +51,19 @@ public class ContentController {
         }
         return ResponseEntity.notFound().build();
     }
+
+    @GetMapping("/calendar/posts")
+    public ResponseEntity<?> getCalendarPosts(@RequestParam Long businessId, @RequestParam int year, @RequestParam int month) {
+        List<Post> posts = postRepository.findAll();
+        return ResponseEntity.ok(posts);
+    }
+
+    @GetMapping("/calendar/summary")
+    public ResponseEntity<?> getCalendarSummary(@RequestParam Long businessId) {
+        Map<String, Object> summary = new HashMap<>();
+        summary.put("totalPosts", postRepository.count());
+        summary.put("scheduledPosts", postRepository.findAll().stream().filter(p -> p.getStatus() == Post.PostStatus.SCHEDULED).count());
+        summary.put("publishedPosts", postRepository.findAll().stream().filter(p -> p.getStatus() == Post.PostStatus.PUBLISHED).count());
+        return ResponseEntity.ok(summary);
+    }
 }

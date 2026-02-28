@@ -11,10 +11,10 @@ import java.util.*;
 public class AIContentService {
 
     public String generateCaption(Business business, Post.Platform platform) {
-        BrandTone brandTone = business.getBrandTone() != null ? business.getBrandTone()
-                : BrandTone.FRIENDLY;
-        MarketingGoal marketingGoal = business.getMarketingGoal() != null ? business.getMarketingGoal()
-                : MarketingGoal.ENGAGEMENT;
+        Business.BrandTone brandTone = business.getBrandTone() != null ? business.getBrandTone()
+                : Business.BrandTone.FRIENDLY;
+        Business.MarketingGoal marketingGoal = business.getMarketingGoal() != null ? business.getMarketingGoal()
+                : Business.MarketingGoal.ENGAGEMENT;
 
         String tone = getToneStyle(brandTone);
         String goal = getGoalCTA(marketingGoal);
@@ -37,8 +37,8 @@ public class AIContentService {
         }
 
         // Goal-based hashtags
-        MarketingGoal goal = business.getMarketingGoal() != null ? business.getMarketingGoal()
-                : MarketingGoal.ENGAGEMENT;
+        Business.MarketingGoal goal = business.getMarketingGoal() != null ? business.getMarketingGoal()
+                : Business.MarketingGoal.ENGAGEMENT;
         switch (goal) {
             case SALES -> hashtags.addAll(List.of("#Sale", "#ShopNow", "#BuyNow"));
             case AWARENESS -> hashtags.addAll(List.of("#BrandAwareness", "#Discover", "#NewBrand"));
@@ -56,13 +56,13 @@ public class AIContentService {
         return String.join(" ", hashtags);
     }
 
-    private List<String> getCaptionTemplates(Post.Platform platform, BrandTone tone) {
-        if (tone == BrandTone.FORMAL || tone == BrandTone.PROFESSIONAL) {
+    private List<String> getCaptionTemplates(Post.Platform platform, Business.BrandTone tone) {
+        if (tone == Business.BrandTone.FORMAL || tone == Business.BrandTone.PROFESSIONAL) {
             return List.of(
                     "Introducing %s - designed for %s. %s",
                     "We're proud to present %s, tailored specifically for %s. %s",
                     "Discover %s - the perfect solution for %s. %s");
-        } else if (tone == BrandTone.FRIENDLY || tone == BrandTone.CASUAL) {
+        } else if (tone == Business.BrandTone.FRIENDLY || tone == Business.BrandTone.CASUAL) {
             return List.of(
                     "Hey %s! 👋 Check out %s - made just for you! %s",
                     "Exciting news! %s is here for %s! %s 🎉",
@@ -75,7 +75,7 @@ public class AIContentService {
         }
     }
 
-    private String getToneStyle(BrandTone tone) {
+    private String getToneStyle(Business.BrandTone tone) {
         return switch (tone) {
             case FORMAL -> "professional and respectful";
             case FRIENDLY -> "warm and approachable";
@@ -85,7 +85,7 @@ public class AIContentService {
         };
     }
 
-    private String getGoalCTA(MarketingGoal goal) {
+    private String getGoalCTA(Business.MarketingGoal goal) {
         return switch (goal) {
             case SALES -> "Shop now and get 20% off!";
             case AWARENESS -> "Follow us to learn more!";

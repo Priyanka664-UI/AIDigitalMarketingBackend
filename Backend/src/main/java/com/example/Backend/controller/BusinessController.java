@@ -1,7 +1,9 @@
 package com.example.Backend.controller;
 
 import com.example.Backend.model.Business;
+import com.example.Backend.model.User;
 import com.example.Backend.repository.BusinessRepository;
+import com.example.Backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,10 +16,21 @@ import java.util.List;
 public class BusinessController {
     
     private final BusinessRepository businessRepository;
+    private final UserRepository userRepository;
     
     @PostMapping
     public ResponseEntity<Business> createBusiness(@RequestBody Business business) {
-        return ResponseEntity.ok(businessRepository.save(business));
+        Business saved = businessRepository.save(business);
+        
+        // Update user's businessId if userId is provided
+        if (business.getId() != null) {
+            userRepository.findById(saved.getId()).ifPresent(user -> {
+                user.setBusinessId(saved.getId());
+                userRepository.save(user);
+            });
+        }
+        
+        return ResponseEntity.ok(saved);
     }
     
     @GetMapping

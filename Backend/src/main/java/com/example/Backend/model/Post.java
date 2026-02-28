@@ -18,10 +18,13 @@ public class Post {
     @Enumerated(EnumType.STRING)
     private Platform platform;
     
-    @Column(length = 2000)
+    @Column(columnDefinition = "TEXT")
     private String caption;
     
+    @Column(columnDefinition = "TEXT")
     private String hashtags;
+    
+    @Column(columnDefinition = "TEXT")
     private String imageUrl;
     private LocalDateTime scheduledTime;
     

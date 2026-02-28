@@ -26,7 +26,7 @@ public class CampaignService {
         campaign.setName(name);
         campaign.setStartDate(startDate);
         campaign.setEndDate(endDate);
-        campaign.setStatus(CampaignStatus.DRAFT);
+        campaign.setStatus(Campaign.CampaignStatus.DRAFT);
 
         return campaignRepository.save(campaign);
     }
