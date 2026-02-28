@@ -26,4 +26,12 @@ public class Business {
     private Integer creditsResetDays = 15;
     private String tier = "Pro Plan";
     private LocalDateTime createdAt = LocalDateTime.now();
+
+    public enum BrandTone {
+        PROFESSIONAL, CASUAL, PREMIUM, FRIENDLY, FORMAL
+    }
+
+    public enum MarketingGoal {
+        LEADS, SALES, AWARENESS, ENGAGEMENT
+    }
 }

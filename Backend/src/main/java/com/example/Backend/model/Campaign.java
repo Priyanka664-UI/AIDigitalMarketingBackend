@@ -24,4 +24,8 @@ public class Campaign {
     private CampaignStatus status;
 
     private LocalDateTime createdAt = LocalDateTime.now();
+
+    public enum CampaignStatus {
+        DRAFT, ACTIVE, PAUSED, COMPLETED
+    }
 }
