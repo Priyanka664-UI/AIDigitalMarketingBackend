@@ -35,24 +35,26 @@ public class DashboardController {
         long totalEngagement = posts.stream().mapToLong(p -> (p.getLikes() != null ? p.getLikes() : 0) +
                 (p.getComments() != null ? p.getComments() : 0)).sum();
 
-        double avgEngagementRate = totalReach > 0 ? (double) totalEngagement / totalReach * 100 : 4.8;
+        double avgEngagementRate = totalReach > 0 ? (double) totalEngagement / totalReach * 100 : 0;
 
-        stats.put("totalPosts", count > 0 ? count : 142);
-        stats.put("totalReach", totalReach > 0 ? formatReach(totalReach) : "128K");
+        stats.put("totalPosts", count);
+        stats.put("totalReach", formatReach(totalReach));
         stats.put("avgEngagementRate", Math.round(avgEngagementRate * 10.0) / 10.0);
-        stats.put("scheduledPosts", scheduled > 0 ? scheduled : 18);
-        stats.put("draftPosts", 12);
-        stats.put("aiCredits", business != null ? business.getAiCredits() : 85);
-        stats.put("creditsResetDays", business != null ? business.getCreditsResetDays() : 12);
+        stats.put("scheduledPosts", scheduled);
+        stats.put("draftPosts", 0);
+        stats.put("aiCredits", business != null ? business.getAiCredits() : 100);
+        stats.put("creditsResetDays", business != null ? business.getCreditsResetDays() : 30);
 
         // Trends
-        stats.put("postsTrend", "+12%");
-        stats.put("engagementTrend", "+0.5%");
+        stats.put("postsTrend", count > 0 ? "+12%" : "0%");
+        stats.put("engagementTrend", totalEngagement > 0 ? "+0.5%" : "0%");
 
         return ResponseEntity.ok(stats);
     }
 
     private String formatReach(long reach) {
+        if (reach == 0)
+            return "0";
         if (reach >= 1000000)
             return String.format("%.1fM", reach / 1000000.0);
         if (reach >= 1000)
