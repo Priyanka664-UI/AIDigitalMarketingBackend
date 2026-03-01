@@ -9,21 +9,25 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(name = "business_name", nullable = false)
     private String businessName;
 
+    @Column(name = "category")
     private String category;
 
+    @Column(name = "target_audience")
     private String targetAudience;
 
+    @Column(name = "brand_tone")
     private String brandTone;
 
-    @Column(nullable = false, unique = true)
+    @Column(name = "email", nullable = false, unique = true)
     private String email;
 
-    @Column(nullable = false)
+    @Column(name = "password", nullable = false)
     private String password;
 
+    @Column(name = "business_id")
     private Long businessId;
 
     public Long getId() { return id; }
@@ -31,12 +35,6 @@ public class User {
 
     public String getBusinessName() { return businessName; }
     public void setBusinessName(String businessName) { this.businessName = businessName; }
-
-    public String getOwnerName() { return ownerName; }
-    public void setOwnerName(String ownerName) { this.ownerName = ownerName; }
-
-    public String getOwnerEmail() { return ownerEmail; }
-    public void setOwnerEmail(String ownerEmail) { this.ownerEmail = ownerEmail; }
 
     public String getCategory() { return category; }
     public void setCategory(String category) { this.category = category; }

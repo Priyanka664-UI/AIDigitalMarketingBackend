@@ -24,31 +24,51 @@ public class AuthController {
 
     @PostMapping("/signup")
     public ResponseEntity<?> signup(@RequestBody User user) {
-        if (userRepository.existsByEmail(user.getEmail())) {
-            return ResponseEntity.badRequest().body(Map.of("message", "Email already registered"));
+        try {
+            if (user.getEmail() == null || user.getEmail().isEmpty()) {
+                return ResponseEntity.badRequest().body(Map.of("message", "Email is required"));
+            }
+            
+            if (userRepository.existsByEmail(user.getEmail())) {
+                return ResponseEntity.badRequest().body(Map.of("message", "Email already registered"));
+            }
+
+            User savedUser = userRepository.save(user);
+
+            // Create Business entity from user data
+            Business business = new Business();
+            business.setBusinessName(savedUser.getBusinessName() != null ? savedUser.getBusinessName() : "Default Business");
+            business.setIndustry(savedUser.getCategory() != null ? savedUser.getCategory() : "General");
+            business.setTargetAudience(savedUser.getTargetAudience() != null ? savedUser.getTargetAudience() : "General Audience");
+            
+            // Handle brandTone conversion safely
+            if (savedUser.getBrandTone() != null && !savedUser.getBrandTone().isEmpty()) {
+                try {
+                    business.setBrandTone(Business.BrandTone.valueOf(savedUser.getBrandTone().toUpperCase()));
+                } catch (IllegalArgumentException e) {
+                    business.setBrandTone(Business.BrandTone.PROFESSIONAL);
+                }
+            } else {
+                business.setBrandTone(Business.BrandTone.PROFESSIONAL);
+            }
+            
+            Business savedBusiness = businessRepository.save(business);
+
+            // Link business to user
+            savedUser.setBusinessId(savedBusiness.getId());
+            userRepository.save(savedUser);
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("userId", savedUser.getId());
+            response.put("businessId", savedBusiness.getId());
+            response.put("token", "dummy-jwt-token");
+            response.put("message", "Registration successful");
+
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body(Map.of("message", "Registration failed: " + e.getMessage()));
         }
-
-        User savedUser = userRepository.save(user);
-
-        // Create Business entity from user data
-        Business business = new Business();
-        business.setBusinessName(savedUser.getBusinessName());
-        business.setIndustry(savedUser.getCategory());
-        business.setTargetAudience(savedUser.getTargetAudience());
-        business.setBrandTone(Business.BrandTone.valueOf(savedUser.getBrandTone().toUpperCase()));
-        Business savedBusiness = businessRepository.save(business);
-
-        // Link business to user
-        savedUser.setBusinessId(savedBusiness.getId());
-        userRepository.save(savedUser);
-
-        Map<String, Object> response = new HashMap<>();
-        response.put("userId", savedUser.getId());
-        response.put("businessId", savedBusiness.getId());
-        response.put("token", "dummy-jwt-token");
-        response.put("message", "Registration successful");
-
-        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/login")

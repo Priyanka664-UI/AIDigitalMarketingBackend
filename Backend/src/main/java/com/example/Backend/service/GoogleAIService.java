@@ -9,49 +9,46 @@ import java.util.*;
 @Service
 public class GoogleAIService {
 
-    @Value("${google.ai.api.key}")
+    @Value("${huggingface.api.key}")
     private String apiKey;
+
+    @Value("${huggingface.api.url}")
+    private String apiUrl;
 
     private final RestTemplate restTemplate = new RestTemplate();
 
     public String generateImage(String prompt) {
-        System.out.println("Generating image with Google AI for: " + prompt);
+        System.out.println("Generating image with Hugging Face for: " + prompt);
         
         try {
-            String url = "https://generativelanguage.googleapis.com/v1beta/models/imagen-3.0-generate-001:predict?key=" + apiKey;
-            
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
+            headers.set("Authorization", "Bearer " + apiKey);
 
             Map<String, Object> requestBody = new HashMap<>();
-            Map<String, Object> instances = new HashMap<>();
-            instances.put("prompt", prompt);
-            requestBody.put("instances", Arrays.asList(instances));
+            requestBody.put("inputs", prompt);
             requestBody.put("parameters", Map.of(
-                "sampleCount", 1,
-                "aspectRatio", "1:1",
-                "safetyFilterLevel", "block_some",
-                "personGeneration", "allow_adult"
+                "num_inference_steps", 30,
+                "guidance_scale", 7.5
             ));
 
             HttpEntity<Map<String, Object>> entity = new HttpEntity<>(requestBody, headers);
 
-            System.out.println("Calling Google Imagen API...");
-            ResponseEntity<Map> response = restTemplate.exchange(url, HttpMethod.POST, entity, Map.class);
+            System.out.println("Calling Hugging Face Stable Diffusion API...");
+            ResponseEntity<byte[]> response = restTemplate.exchange(
+                apiUrl, 
+                HttpMethod.POST, 
+                entity, 
+                byte[].class
+            );
 
             if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
-                System.out.println("Response: " + response.getBody());
-                List<Map<String, Object>> predictions = (List<Map<String, Object>>) response.getBody().get("predictions");
-                if (predictions != null && !predictions.isEmpty()) {
-                    String imageData = (String) predictions.get(0).get("bytesBase64Encoded");
-                    if (imageData != null) {
-                        System.out.println("Image generated successfully");
-                        return "data:image/png;base64," + imageData;
-                    }
-                }
+                String base64Image = Base64.getEncoder().encodeToString(response.getBody());
+                System.out.println("Image generated successfully");
+                return "data:image/png;base64," + base64Image;
             }
         } catch (Exception e) {
-            System.err.println("Google AI Error: " + e.getMessage());
+            System.err.println("Hugging Face Error: " + e.getMessage());
             e.printStackTrace();
         }
         
