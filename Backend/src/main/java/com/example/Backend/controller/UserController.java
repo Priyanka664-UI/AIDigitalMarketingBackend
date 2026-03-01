@@ -1,5 +1,8 @@
 package com.example.Backend.controller;
 
+import com.example.Backend.model.User;
+import com.example.Backend.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -10,17 +13,27 @@ import java.util.*;
 @CrossOrigin(origins = "*")
 public class UserController {
 
+    @Autowired
+    private UserRepository userRepository;
+
     @GetMapping("/{id}")
     public ResponseEntity<?> getUser(@PathVariable Long id) {
-        Map<String, Object> user = new HashMap<>();
-        user.put("id", id);
-        user.put("name", "John Doe");
-        user.put("email", "john@example.com");
-        user.put("phone", "+1 234 567 8900");
-        user.put("role", "User");
-        user.put("createdAt", "2024-01-15");
-        user.put("lastLogin", "2024-01-20 10:30 AM");
-        return ResponseEntity.ok(user);
+        User user = userRepository.findById(id).orElse(null);
+        if (user == null) {
+            return ResponseEntity.notFound().build();
+        }
+        
+        Map<String, Object> response = new HashMap<>();
+        response.put("id", user.getId());
+        response.put("name", user.getOwnerName() != null ? user.getOwnerName() : user.getBusinessName());
+        response.put("email", user.getEmail());
+        response.put("phone", "");
+        response.put("role", "User");
+        response.put("businessName", user.getBusinessName());
+        response.put("category", user.getCategory());
+        response.put("targetAudience", user.getTargetAudience());
+        response.put("brandTone", user.getBrandTone());
+        return ResponseEntity.ok(response);
     }
 
     @PutMapping("/{id}")

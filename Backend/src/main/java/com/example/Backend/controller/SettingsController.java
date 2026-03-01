@@ -1,5 +1,8 @@
 package com.example.Backend.controller;
 
+import com.example.Backend.model.Settings;
+import com.example.Backend.service.SettingsService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -10,61 +13,65 @@ import java.util.*;
 @CrossOrigin(origins = "*")
 public class SettingsController {
 
+    @Autowired
+    private SettingsService settingsService;
+
+    // CREATE/READ - Get or create settings for user
+    @GetMapping("/{userId}")
+    public ResponseEntity<Settings> getSettings(@PathVariable Long userId) {
+        return ResponseEntity.ok(settingsService.getOrCreateSettings(userId));
+    }
+
+    // UPDATE - Update all settings
+    @PutMapping("/{userId}")
+    public ResponseEntity<Settings> updateSettings(@PathVariable Long userId, @RequestBody Settings settings) {
+        return ResponseEntity.ok(settingsService.updateSettings(userId, settings));
+    }
+
+    // DELETE - Delete settings
+    @DeleteMapping("/{userId}")
+    public ResponseEntity<Map<String, String>> deleteSettings(@PathVariable Long userId) {
+        settingsService.deleteSettings(userId);
+        return ResponseEntity.ok(Map.of("message", "Settings deleted successfully"));
+    }
+
+    // Legacy endpoints for backward compatibility
     @GetMapping("/ai-preferences/{userId}")
-    public ResponseEntity<?> getAIPreferences(@PathVariable Long userId) {
-        Map<String, Object> preferences = new HashMap<>();
-        preferences.put("defaultTone", "Professional");
-        preferences.put("defaultPlatform", "Instagram");
-        preferences.put("autoGenerateImages", true);
-        preferences.put("aiSuggestions", true);
-        return ResponseEntity.ok(preferences);
+    public ResponseEntity<Settings> getAIPreferences(@PathVariable Long userId) {
+        return ResponseEntity.ok(settingsService.getOrCreateSettings(userId));
     }
 
     @PostMapping("/ai-preferences/{userId}")
-    public ResponseEntity<?> saveAIPreferences(@PathVariable Long userId, @RequestBody Map<String, Object> data) {
-        Map<String, String> response = new HashMap<>();
-        response.put("message", "AI preferences saved successfully");
-        return ResponseEntity.ok(response);
+    public ResponseEntity<Map<String, String>> saveAIPreferences(@PathVariable Long userId, @RequestBody Settings settings) {
+        settingsService.updateSettings(userId, settings);
+        return ResponseEntity.ok(Map.of("message", "AI preferences saved successfully"));
     }
 
     @GetMapping("/notifications/{userId}")
-    public ResponseEntity<?> getNotifications(@PathVariable Long userId) {
-        Map<String, Object> notifications = new HashMap<>();
-        notifications.put("emailNotifications", true);
-        notifications.put("postReminders", true);
-        notifications.put("campaignUpdates", false);
-        notifications.put("weeklyReports", true);
-        return ResponseEntity.ok(notifications);
+    public ResponseEntity<Settings> getNotifications(@PathVariable Long userId) {
+        return ResponseEntity.ok(settingsService.getOrCreateSettings(userId));
     }
 
     @PostMapping("/notifications/{userId}")
-    public ResponseEntity<?> saveNotifications(@PathVariable Long userId, @RequestBody Map<String, Object> data) {
-        Map<String, String> response = new HashMap<>();
-        response.put("message", "Notification preferences saved successfully");
-        return ResponseEntity.ok(response);
+    public ResponseEntity<Map<String, String>> saveNotifications(@PathVariable Long userId, @RequestBody Settings settings) {
+        settingsService.updateSettings(userId, settings);
+        return ResponseEntity.ok(Map.of("message", "Notification preferences saved successfully"));
     }
 
     @PostMapping("/platforms/connect")
-    public ResponseEntity<?> connectPlatform(@RequestBody Map<String, Object> data) {
+    public ResponseEntity<Map<String, String>> connectPlatform(@RequestBody Map<String, Object> data) {
         String platform = (String) data.get("platform");
-        Long userId = Long.valueOf(data.get("userId").toString());
-        Map<String, String> response = new HashMap<>();
-        response.put("message", platform + " connected successfully");
-        response.put("status", "connected");
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(Map.of("message", platform + " connected successfully", "status", "connected"));
     }
 
     @PostMapping("/platforms/disconnect")
-    public ResponseEntity<?> disconnectPlatform(@RequestBody Map<String, Object> data) {
+    public ResponseEntity<Map<String, String>> disconnectPlatform(@RequestBody Map<String, Object> data) {
         String platform = (String) data.get("platform");
-        Map<String, String> response = new HashMap<>();
-        response.put("message", platform + " disconnected successfully");
-        response.put("status", "disconnected");
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(Map.of("message", platform + " disconnected successfully", "status", "disconnected"));
     }
 
     @GetMapping("/subscription/{userId}")
-    public ResponseEntity<?> getSubscription(@PathVariable Long userId) {
+    public ResponseEntity<Map<String, Object>> getSubscription(@PathVariable Long userId) {
         Map<String, Object> subscription = new HashMap<>();
         subscription.put("plan", "Free");
         subscription.put("status", "Active");
@@ -75,28 +82,19 @@ public class SettingsController {
     }
 
     @PostMapping("/subscription/upgrade")
-    public ResponseEntity<?> upgradePlan(@RequestBody Map<String, Object> data) {
+    public ResponseEntity<Map<String, String>> upgradePlan(@RequestBody Map<String, Object> data) {
         String plan = (String) data.get("plan");
-        Long userId = Long.valueOf(data.get("userId").toString());
-        Map<String, String> response = new HashMap<>();
-        response.put("message", "Upgraded to " + plan + " plan successfully");
-        response.put("status", "success");
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(Map.of("message", "Upgraded to " + plan + " plan successfully", "status", "success"));
     }
 
     @GetMapping("/scheduling/{userId}")
-    public ResponseEntity<?> getSchedulingPreferences(@PathVariable Long userId) {
-        Map<String, Object> preferences = new HashMap<>();
-        preferences.put("defaultPostingTime", "10:00");
-        preferences.put("timeZone", "UTC");
-        preferences.put("autoSchedule", false);
-        return ResponseEntity.ok(preferences);
+    public ResponseEntity<Settings> getSchedulingPreferences(@PathVariable Long userId) {
+        return ResponseEntity.ok(settingsService.getOrCreateSettings(userId));
     }
 
     @PostMapping("/scheduling/{userId}")
-    public ResponseEntity<?> saveSchedulingPreferences(@PathVariable Long userId, @RequestBody Map<String, Object> data) {
-        Map<String, String> response = new HashMap<>();
-        response.put("message", "Scheduling preferences saved successfully");
-        return ResponseEntity.ok(response);
+    public ResponseEntity<Map<String, String>> saveSchedulingPreferences(@PathVariable Long userId, @RequestBody Settings settings) {
+        settingsService.updateSettings(userId, settings);
+        return ResponseEntity.ok(Map.of("message", "Scheduling preferences saved successfully"));
     }
 }

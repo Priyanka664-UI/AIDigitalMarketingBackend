@@ -12,6 +12,9 @@ public class User {
     @Column(name = "business_name", nullable = false)
     private String businessName;
 
+    @Column(name = "owner_name")
+    private String ownerName;
+
     @Column(name = "category")
     private String category;
 
@@ -35,6 +38,9 @@ public class User {
 
     public String getBusinessName() { return businessName; }
     public void setBusinessName(String businessName) { this.businessName = businessName; }
+
+    public String getOwnerName() { return ownerName; }
+    public void setOwnerName(String ownerName) { this.ownerName = ownerName; }
 
     public String getCategory() { return category; }
     public void setCategory(String category) { this.category = category; }

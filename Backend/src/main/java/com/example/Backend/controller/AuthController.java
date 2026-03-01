@@ -4,6 +4,7 @@ import com.example.Backend.model.Business;
 import com.example.Backend.model.User;
 import com.example.Backend.repository.BusinessRepository;
 import com.example.Backend.repository.UserRepository;
+import com.example.Backend.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,6 +22,9 @@ public class AuthController {
 
     @Autowired
     private BusinessRepository businessRepository;
+
+    @Autowired
+    private JwtUtil jwtUtil;
 
     @PostMapping("/signup")
     public ResponseEntity<?> signup(@RequestBody User user) {
@@ -58,10 +62,12 @@ public class AuthController {
             savedUser.setBusinessId(savedBusiness.getId());
             userRepository.save(savedUser);
 
+            String token = jwtUtil.generateToken(savedUser.getEmail(), savedUser.getId(), savedBusiness.getId());
+
             Map<String, Object> response = new HashMap<>();
             response.put("userId", savedUser.getId());
             response.put("businessId", savedBusiness.getId());
-            response.put("token", "dummy-jwt-token");
+            response.put("token", token);
             response.put("message", "Registration successful");
 
             return ResponseEntity.ok(response);
@@ -76,16 +82,27 @@ public class AuthController {
         String email = credentials.get("email");
         String password = credentials.get("password");
 
-        User user = userRepository.findByEmail(email)
-                .orElse(null);
-
-        if (user == null || !user.getPassword().equals(password)) {
-            return ResponseEntity.badRequest().body(Map.of("message", "Invalid credentials"));
+        if (email == null || password == null) {
+            return ResponseEntity.badRequest().body(Map.of("message", "Email and password are required"));
         }
+
+        User user = userRepository.findByEmail(email).orElse(null);
+
+        if (user == null) {
+            return ResponseEntity.badRequest().body(Map.of("message", "User not found. Please register first."));
+        }
+
+        if (!user.getPassword().equals(password)) {
+            return ResponseEntity.badRequest().body(Map.of("message", "Invalid password"));
+        }
+
+        Long businessId = user.getBusinessId() != null ? user.getBusinessId() : user.getId();
+        String token = jwtUtil.generateToken(user.getEmail(), user.getId(), businessId);
 
         Map<String, Object> response = new HashMap<>();
         response.put("userId", user.getId());
-        response.put("businessId", user.getBusinessId() != null ? user.getBusinessId() : user.getId());
+        response.put("businessId", businessId);
+        response.put("token", token);
         response.put("message", "Login successful");
 
         return ResponseEntity.ok(response);
