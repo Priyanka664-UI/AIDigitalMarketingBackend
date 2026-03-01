@@ -1,0 +1,36 @@
+spring.application.name=Backend
+
+# PostgreSQL Database
+spring.datasource.url=jdbc:postgresql://localhost:5433/Hackthon
+spring.datasource.driverClassName=org.postgresql.Driver
+spring.datasource.username=postgres
+spring.datasource.password=YOUR_DB_PASSWORD
+spring.jpa.database-platform=org.hibernate.dialect.PostgreSQLDialect
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.show-sql=false
+
+# Server
+server.port=8083
+
+# JWT Configuration
+jwt.secret=YOUR_JWT_SECRET_KEY_HERE
+jwt.expiration=604800000
+
+# CORS
+spring.web.cors.allowed-origins=http://localhost:4200
+spring.web.cors.allowed-methods=GET,POST,PUT,DELETE,OPTIONS
+spring.web.cors.allowed-headers=*
+
+# Hugging Face API - FREE (Get token from https://huggingface.co/settings/tokens)
+huggingface.api.key=YOUR_HUGGINGFACE_API_KEY
+huggingface.api.url=https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-xl-base-1.0
+
+# TensorFlow Lite Model
+tflite.model.path=c:/Users/priyanka/OnlineHackthon/1.tflite
+
+# Google AI API
+google.ai.api.key=YOUR_GOOGLE_AI_API_KEY
+
+# Anthropic Claude API (disabled - no credits)
+anthropic.api.key=
+anthropic.api.url=https://api.anthropic.com/v1/messages

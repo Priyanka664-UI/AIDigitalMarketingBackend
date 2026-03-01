@@ -3,6 +3,7 @@ package com.example.Backend.service;
 import com.example.Backend.model.*;
 import com.example.Backend.repository.*;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -10,12 +11,14 @@ import java.util.*;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class CampaignService {
 
     private final CampaignRepository campaignRepository;
     private final PostRepository postRepository;
     private final BusinessRepository businessRepository;
     private final AIContentService aiContentService;
+    private final AIImageService aiImageService;
 
     public Campaign createCampaign(Long businessId, String name, LocalDate startDate, LocalDate endDate) {
         Business business = businessRepository.findById(businessId)
@@ -65,7 +68,13 @@ public class CampaignService {
         post.setPlatform(platform);
         post.setCaption(aiContentService.generateCaption(business, platform));
         post.setHashtags(aiContentService.generateHashtags(business, platform));
-        post.setImageUrl("https://via.placeholder.com/800x600?text=" + business.getBusinessName());
+        
+        // Generate AI image
+        String imagePrompt = aiContentService.generateImagePrompt(business);
+        log.info("Generating image for post with prompt: {}", imagePrompt);
+        String imageUrl = aiImageService.generateImage(imagePrompt);
+        post.setImageUrl(imageUrl);
+        
         post.setScheduledTime(date.atTime(10, 0));
         post.setStatus(Post.PostStatus.SCHEDULED);
 

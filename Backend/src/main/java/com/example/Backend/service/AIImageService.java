@@ -1,17 +1,87 @@
 package com.example.Backend.service;
 
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
+import reactor.core.publisher.Mono;
 
+import java.time.Duration;
 import java.util.Base64;
+import java.util.Map;
 
 @Service
+@Slf4j
 public class AIImageService {
     
+    @Value("${huggingface.api.key}")
+    private String apiKey;
+    
+    @Value("${huggingface.api.url}")
+    private String apiUrl;
+    
+    private final WebClient webClient;
+    
     public AIImageService() {
+        this.webClient = WebClient.builder()
+            .codecs(c -> c.defaultCodecs().maxInMemorySize(20 * 1024 * 1024))
+            .build();
     }
     
     public String generateImage(String prompt) {
+        log.info("Generating image for prompt: {}", prompt);
+        
+        try {
+            String enhancedPrompt = enhancePromptForMarketing(prompt);
+            log.info("Enhanced prompt: {}", enhancedPrompt);
+            
+            Map<String, Object> body = Map.of(
+                "inputs", enhancedPrompt
+            );
+            
+            log.info("Calling HuggingFace API at: {}", apiUrl);
+            
+            byte[] imageBytes = webClient.post()
+                .uri(apiUrl)
+                .header("Authorization", "Bearer " + apiKey)
+                .header("Content-Type", "application/json")
+                .bodyValue(body)
+                .retrieve()
+                .bodyToMono(byte[].class)
+                .timeout(Duration.ofSeconds(60))
+                .doOnError(WebClientResponseException.class, e -> {
+                    log.error("HuggingFace API error - Status: {}, Body: {}", 
+                        e.getStatusCode(), e.getResponseBodyAsString());
+                })
+                .doOnError(e -> {
+                    log.error("Error calling HuggingFace API: {}", e.getMessage(), e);
+                })
+                .onErrorResume(e -> {
+                    log.warn("Falling back to SVG due to error: {}", e.getMessage());
+                    return Mono.empty();
+                })
+                .block();
+            
+            if (imageBytes != null && imageBytes.length > 0) {
+                log.info("Successfully generated image, size: {} bytes", imageBytes.length);
+                return "data:image/jpeg;base64," + Base64.getEncoder().encodeToString(imageBytes);
+            } else {
+                log.warn("No image bytes received from API");
+            }
+        } catch (Exception e) {
+            log.error("Image generation failed with exception: {}", e.getMessage(), e);
+        }
+        
+        log.info("Using SVG fallback");
         return generateSVGFallback(prompt);
+    }
+    
+    private String enhancePromptForMarketing(String prompt) {
+        return "Professional digital marketing advertisement image, " + prompt +
+               ", high quality, modern design, vibrant colors, " +
+               "brand identity, commercial photography style, " +
+               "clean background, 4K, sharp focus";
     }
     
     private String generateSVGFallback(String prompt) {
